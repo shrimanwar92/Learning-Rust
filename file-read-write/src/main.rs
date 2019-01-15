@@ -11,6 +11,13 @@ struct FileData {
 }
 
 impl FileData {
+
+	fn new(name: &'static str, contents: &'static str) -> FileData {
+		FileData {
+			name: name,
+			contents: contents
+		}
+	}
 	fn create(&self) {
 		let pathName = [self.name, "txt"].join(".");
 		let path = Path::new(&pathName);
@@ -27,16 +34,22 @@ impl FileData {
             	panic!("couldn't write to {}: {}", display,
                                                why.description())
         	},
-        	Ok(_) => println!("successfully wrote to {}", display),
+        	Ok(res) => println!("successfully wrote to {}", display),
 		};
+		result;
 	}
 }
 
 fn main() {
-    let a = FileData {
-    	name: "nilay",
-    	contents: "test contents",
-    };
-
-    a.create()
+	static LOREM_IPSUM: &'static str =
+		"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+		proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		";
+    
+    let fd = FileData::new("123", LOREM_IPSUM);
+    fd.create();
 }
