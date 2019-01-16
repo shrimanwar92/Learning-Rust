@@ -3,6 +3,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+use std::io;
 
 #[derive(Debug)]
 struct FileData {
@@ -18,7 +19,7 @@ impl FileData {
 			contents: contents
 		}
 	}
-	fn create(&self) {
+	fn create(&self) -> Result<&'static str, &'static str> {
 		let pathName = [self.name, "txt"].join(".");
 		let path = Path::new(&pathName);
 		let display = path.display();
@@ -29,14 +30,10 @@ impl FileData {
 			Ok(file) => file,
 		};
 
-		let result = match file.write_all(self.contents.as_bytes()) {
-			Err(why) => {
-            	panic!("couldn't write to {}: {}", display,
-                                               why.description())
-        	},
-        	Ok(res) => println!("successfully wrote to {}", display),
-		};
-		result;
+		match file.write_all(self.contents.as_bytes()) {
+			Ok(file) => Ok("success"),
+        	Err(err) => Err("fail"),
+		}
 	}
 }
 
@@ -51,5 +48,9 @@ fn main() {
 		";
     
     let fd = FileData::new("123", LOREM_IPSUM);
-    fd.create();
+    let res = fd.create();
+    match res {
+    	Ok(m) => println!("{:?}", m),
+    	Err(e) => println!("{:?}", e),
+    }
 }
