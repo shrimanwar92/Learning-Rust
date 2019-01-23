@@ -47,57 +47,84 @@ impl NumberToWords {
 		}
 	}
 
-	fn make_word(&self) -> Option<&str>{
-		let s: String = self.number.to_string();
+	fn make_word(&self) -> Option<String>{
+		let s = self.number.to_string();
 		let dict = NumberToWords::get_dictionary();
 
-		// mystring.chars().last().unwrap();
-
-		match &s.len() {
+		match s.len() {
 			1 => match dict.get(s.as_str()) {
-        			Some(val) => return Some(val),
+        			Some(val) => return Some(val.to_string()),
         			None => return None,
     		},
-    		/*2 => match dict.get(s.as_str()) {
-    			Some(val) if dict.contains_key(val) => return Some(val),
-    			Some(_) => return Some(),
-    			_ => panic!("Please input proper input"),
-    		}*/
-    		2 => match NumberToWords::two_digits(s, &dict) {
-    			Some(val) => return Some(val),
-    			None => return None,
-    		}
+    		2 => match NumberToWords::two_digits(&s, &dict) {
+    			Some(val) => Some(val),
+    			None => None,
+    		},
+    		3 => match NumberToWords::three_digits(&s, &dict) {
+    			Some(val) => Some(val),
+    			None => None,
+    		},
     		_ => return None
 		}
 	}
 
-	fn two_digits(t: String, dict: &HashMap<&str, &str>) -> Option<String> {
+	fn two_digits(t: &str, dict: &HashMap<&str, &str>) -> Option<String> {
 		let s = t.to_string();
 
-		println!("{:?}", s);
+		if dict.contains_key(&s.as_str()) {
+			match dict.get(&s.as_str()) {
+				Some(val) => return Some(val.to_string()),
+				None => return None
+			};
+		}
 
 		let first: Vec<char> = s.chars().take(1).collect();
 		let mut first: String = first.into_iter().collect();
 		first.push_str(&"0".to_string());
 
+		let res1 = dict.get(first.as_str());
+		let res1 = match res1 {
+			Some(s) => s.to_string(),
+			None => "".to_string(),
+		};
+
 		let last: Vec<char> = s.chars().rev().take(1).collect();
 		let last: String = last.into_iter().collect();
+
+		let res2 = dict.get(last.as_str());
+		let res2 = match res2 {
+			Some(s) => s.to_string(),
+			None => "".to_string(),
+		};	
+
+		Some([res1, res2].join(" "))
+	}
+
+	fn three_digits(digits: &str, dict: &HashMap<&str, &str>) -> Option<String> {
+		// 100
+		// 200
+		// 143
+		// 120
+		// 999
+		let first: Vec<char> = digits.chars().take(1).collect();
+		let first: String = first.into_iter().collect();
 
 		let res1 = dict.get(first.as_str());
 		let res1 = match res1 {
 			Some(s) => s,
 			None => "not found",
 		};
-		let res2 = dict.get(last.as_str());
+
+		let last: Vec<char> = digits.chars().rev().take(2).collect();
+		let last: String = last.into_iter().rev().collect();
+
+		let res2 = NumberToWords::two_digits(&last, &dict);
 		let res2 = match res2 {
-			Some(s) => s,
-			None => "not found",
+			Some(s) => s.to_string(),
+			None => "".to_string(),
 		};
 
-		println!("{:?}", [res1, res2].join(" "));
-		
-
-		Some([res1, res2].join(" ").to_owned())
+		Some([res1, "hundred", res2.as_str()].join(" "))
 	}
 }
 
@@ -108,7 +135,7 @@ fn main() {
 	// println!("{:?}", dictionary.contains_key("109"));
 
 
-    let w = NumberToWords::new(23);
+    let w = NumberToWords::new(901);
     match w.make_word() {
     	Some(s) => println!("{:?}", s),
     	None => println!("Not found"),
