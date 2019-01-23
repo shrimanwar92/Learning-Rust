@@ -64,6 +64,10 @@ impl NumberToWords {
     			Some(val) => Some(val),
     			None => None,
     		},
+    		4 => match NumberToWords::four_digits(&s, &dict) {
+    			Some(val) => Some(val),
+    			None => None,
+    		},
     		_ => return None
 		}
 	}
@@ -112,7 +116,7 @@ impl NumberToWords {
 		let res1 = dict.get(first.as_str());
 		let res1 = match res1 {
 			Some(s) => s,
-			None => "not found",
+			None => "",
 		};
 
 		let last: Vec<char> = digits.chars().rev().take(2).collect();
@@ -124,18 +128,43 @@ impl NumberToWords {
 			None => "".to_string(),
 		};
 
-		Some([res1, "hundred", res2.as_str()].join(" "))
+		if res1 != "" {
+			Some([res1, "hundred", res2.as_str()].join(" "))
+		} else {
+			Some([res1, res2.as_str()].join(" "))
+		}
+
+	}
+
+	fn four_digits(digits: &str, dict: &HashMap<&str, &str>) -> Option<String> {
+		let first: Vec<char> = digits.chars().take(1).collect();
+		let first: String = first.into_iter().collect();
+
+		let res1 = dict.get(first.as_str());
+		let res1 = match res1 {
+			Some(s) => s,
+			None => "",
+		};
+
+		let last: Vec<char> = digits.chars().rev().take(3).collect();
+		let last: String = last.into_iter().rev().collect();
+
+		let res2 = NumberToWords::three_digits(&last, &dict);
+		let res2 = match res2 {
+			Some(s) => s.to_string(),
+			None => "".to_string(),
+		};
+
+		if res1 != "" {
+			Some([res1, "thousand", res2.as_str()].join(" "))
+		} else {
+			Some([res1, res2.as_str()].join(" "))
+		}
 	}
 }
 
 fn main() {
-	
-
-
-	// println!("{:?}", dictionary.contains_key("109"));
-
-
-    let w = NumberToWords::new(901);
+    let w = NumberToWords::new(9000);
     match w.make_word() {
     	Some(s) => println!("{:?}", s),
     	None => println!("Not found"),
