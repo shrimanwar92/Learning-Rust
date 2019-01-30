@@ -53,8 +53,8 @@ impl NumberToWords {
 
 		match s.len() {
 			1 => match dict.get(s.as_str()) {
-        			Some(val) => return Some(val.to_string()),
-        			None => return None,
+        			Some(val) => Some(val.to_string()),
+        			None => None,
     		},
     		2 => match NumberToWords::two_digits(&s, &dict) {
     			Some(val) => Some(val),
@@ -164,9 +164,16 @@ impl NumberToWords {
 }
 
 fn main() {
-    let w = NumberToWords::new(9000);
+    /*let w = NumberToWords::new(9000);
     match w.make_word() {
     	Some(s) => println!("{:?}", s),
     	None => println!("Not found"),
-    }
+    }*/
+
+    let tmp: String = "hello".to_string();
+    test(tmp.as_str());
+}
+
+fn test(s: &str) {
+	println!("{:?}", s);
 }
