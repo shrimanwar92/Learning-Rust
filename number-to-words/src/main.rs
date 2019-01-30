@@ -82,9 +82,8 @@ impl NumberToWords {
 			};
 		}
 
-		let first: Vec<char> = s.chars().take(1).collect();
-		let mut first: String = first.into_iter().collect();
-		first.push_str(&"0".to_string());
+		let first = &s[..1];
+        let first = [first, "0"].join("");
 
 		let res1 = dict.get(first.as_str());
 		let res1 = match res1 {
@@ -92,10 +91,9 @@ impl NumberToWords {
 			None => "".to_string(),
 		};
 
-		let last: Vec<char> = s.chars().rev().take(1).collect();
-		let last: String = last.into_iter().collect();
+		let last = &s[1..];
 
-		let res2 = dict.get(last.as_str());
+		let res2 = dict.get(last);
 		let res2 = match res2 {
 			Some(s) => s.to_string(),
 			None => "".to_string(),
@@ -110,17 +108,15 @@ impl NumberToWords {
 		// 143
 		// 120
 		// 999
-		let first: Vec<char> = digits.chars().take(1).collect();
-		let first: String = first.into_iter().collect();
+		let first = &digits[..1];
 
-		let res1 = dict.get(first.as_str());
+		let res1 = dict.get(first);
 		let res1 = match res1 {
 			Some(s) => s,
 			None => "",
 		};
 
-		let last: Vec<char> = digits.chars().rev().take(2).collect();
-		let last: String = last.into_iter().rev().collect();
+		let last = &digits[1..];
 
 		let res2 = NumberToWords::two_digits(&last, &dict);
 		let res2 = match res2 {
@@ -137,17 +133,15 @@ impl NumberToWords {
 	}
 
 	fn four_digits(digits: &str, dict: &HashMap<&str, &str>) -> Option<String> {
-		let first: Vec<char> = digits.chars().take(1).collect();
-		let first: String = first.into_iter().collect();
+		let first = &digits[..1];
 
-		let res1 = dict.get(first.as_str());
+		let res1 = dict.get(first);
 		let res1 = match res1 {
 			Some(s) => s,
 			None => "",
 		};
 
-		let last: Vec<char> = digits.chars().rev().take(3).collect();
-		let last: String = last.into_iter().rev().collect();
+		let last = &digits[1..];
 
 		let res2 = NumberToWords::three_digits(&last, &dict);
 		let res2 = match res2 {
@@ -164,16 +158,9 @@ impl NumberToWords {
 }
 
 fn main() {
-    /*let w = NumberToWords::new(9000);
+    let w = NumberToWords::new(6111);
     match w.make_word() {
     	Some(s) => println!("{:?}", s),
     	None => println!("Not found"),
-    }*/
-
-    let tmp: String = "hello".to_string();
-    test(tmp.as_str());
-}
-
-fn test(s: &str) {
-	println!("{:?}", s);
+    }
 }
