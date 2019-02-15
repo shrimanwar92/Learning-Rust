@@ -5,11 +5,16 @@ struct Product {
 	unit_price: f64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 struct Item {
 	item: Product,
 	quantity: i32,
 	total_price: f64,
+}
+
+#[derive(Debug)]
+struct Cart {
+	items: Vec<Item>
 }
 
 impl Product {
@@ -32,22 +37,48 @@ impl Item {
 		}
 	}
 
-	fn add_to_cart(items: Vec<Item>) -> f64 {
+	fn update_item(&mut self, new_quantity: i32) -> Self {
+		self.quantity = new_quantity;
+		self.total_price = self.quantity as f64 * self.item.unit_price;
+		*self
+	}
+}
+
+impl PartialEq for Item {
+    fn eq(&self, other: &Item) -> bool {
+        self == other
+    }
+}
+
+impl Cart {
+	fn new() -> Cart{
+		Cart {
+			items: Vec::new()
+		}
+	}
+
+	fn add(&mut self, item: Item) {
+		self.items.push(item);
+	}
+
+	fn update(&mut self, item1: Item, quantity: i32) {
+		/*let u_item = item.update_item(quantity);
+		println!("{:?}", u_item);*/
+
+		for mut item in &mut self.items {
+			if item.item.name == item1.item.name {
+				item.quantity = quantity;
+				item.total_price = item.quantity as f64 * item.item.unit_price;
+			}
+		}
+	}
+
+	fn calculate_total(&self) -> f64 {
 		let mut sum: f64 = 0.0;
-		for item in &items {
+		for item in &self.items {
 			sum += item.total_price;
 		}
 		sum
-	}
-
-	fn update_item(&mut self, new_quantity: i32) -> Item {
-		self.quantity = new_quantity;
-		self.total_price = self.quantity as f64 * self.item.unit_price; 
-		Item {
-			item: self.item,
-			quantity: self.quantity,
-			total_price: self.total_price
-		}
 	}
 }
 
@@ -56,13 +87,22 @@ fn main() {
 
     let mut i1 = Item::new(products[0], 3);
     let mut i2 = Item::new(products[1], 6);
-
+    
+    // individual item update
     let i1 = i1.update_item(4);
     println!("{:?}", i1);
 
     let i2 = i2.update_item(10);
     println!("{:?}", i2);
 
-    let total = Item::add_to_cart(vec![i1, i2]);
-    println!("{:?}", total);
+    let mut cart = Cart::new();
+    cart.add(i1);
+    cart.add(i2);
+
+    // update item in cart array
+    cart.update(i1, 10);
+    cart.update(i1, 12);
+    println!("{:?}", cart);
+
+    println!("{:?}", cart.calculate_total());
 }
