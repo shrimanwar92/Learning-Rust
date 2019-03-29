@@ -1,0 +1,7 @@
+[package]
+name = "mutexes"
+version = "0.1.0"
+authors = ["nshriman"]
+edition = "2018"
+
+[dependencies]
